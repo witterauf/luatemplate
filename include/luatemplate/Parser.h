@@ -31,6 +31,7 @@ public:
 
     auto loadTemplateFromString(const std::string& templateString) -> Template
     {
+        reset();
         m_string = &templateString;
         m_pos = m_string->cbegin();
 
@@ -60,7 +61,7 @@ public:
         LT_ExpectsRange(index < luaBlockCount());
         return m_luaBlocks[index];
     }
-    
+
     auto luaBlockCount() const -> size_t { return m_luaBlocks.size(); }
 
     auto staticString(size_t index) const -> const std::string&
@@ -74,7 +75,18 @@ public:
 private:
     Template m_template;
 
-    void initializeLuaCode() { m_luaCode = "function generate(engine) local luatemplate = engine\n"; }
+    void reset()
+    {
+        m_luaBlocks.clear();
+        m_stringElements.clear();
+        m_luaCode.clear();
+        m_stringElement.clear();
+    }
+
+    void initializeLuaCode()
+    {
+        m_luaCode = "function generate(engine) local luatemplate = engine\n";
+    }
 
     void constructLuaCode()
     {
@@ -202,14 +214,12 @@ private:
 
     const std::string* m_string{nullptr};
     std::string::const_iterator m_pos;
-    std::string m_output;
 
-    [[noreturn]] void reportCouldNotOpenTemplate(const std::string& filename)
-    {
+    [[noreturn]] void reportCouldNotOpenTemplate(const std::string& filename) {
         throw std::runtime_error{"could not load template '" + filename + "'"};
     }
 
-    [[noreturn]] void reportUnexpectedEndOfInput()
+        [[noreturn]] void reportUnexpectedEndOfInput()
     {
         throw std::runtime_error{"unexpected end of input during parsing of template"};
     }
