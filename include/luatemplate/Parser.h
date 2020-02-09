@@ -21,7 +21,9 @@ public:
         {
             std::string content((std::istreambuf_iterator<char>(input)),
                                 (std::istreambuf_iterator<char>()));
-            return loadTemplateFromString(content);
+            auto luaTemplate = loadTemplateFromString(content);
+            luaTemplate.setSourceFile(pathToTemplate);
+            return luaTemplate;
         }
         else
         {
@@ -85,7 +87,7 @@ private:
 
     void initializeLuaCode()
     {
-        m_luaCode = "function generate(engine) local luatemplate = engine\n";
+        m_luaCode = "function generate(engine)\n";
     }
 
     void constructLuaCode()
